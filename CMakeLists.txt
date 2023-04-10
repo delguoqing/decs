@@ -34,7 +34,7 @@ if(BUILD_TESTING)
 		FetchContent_Declare(googletest
 		#ExternalProject_Add(googletest
 		  GIT_REPOSITORY    https://github.com/google/googletest.git
-		  GIT_TAG           master
+		  GIT_TAG           main
 		  SOURCE_DIR        "${GOOGLETEST_DEPS_DIR}/src"
 		  BINARY_DIR        "${GOOGLETEST_DEPS_DIR}/build"
 		  CONFIGURE_COMMAND ""
