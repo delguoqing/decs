@@ -132,7 +132,11 @@ namespace decs {
 		}
 		template<typename T>
 		static constexpr const char* name_detail() {
+#if defined(_MSC_VER)
 			return __FUNCSIG__;
+#else
+            return __PRETTY_FUNCTION__;
+#endif
 		}
 
 		template<typename T>
@@ -381,6 +385,8 @@ namespace decs {
 
 		template<typename C>
 		void add_component(EntityID id, C& comp);
+        template<typename C>
+        void add_component(EntityID id, C&& comp);
 		template<typename C>
 		void add_component(EntityID id);
 
@@ -1272,6 +1278,12 @@ namespace decs {
 	{
 		adv::add_component_to_entity<C>(this, id, comp);
 	}
+
+    template<typename C>
+    inline void ECSWorld::add_component(EntityID id, C&& comp)
+    {
+        adv::add_component_to_entity<C>(this, id, comp);
+    }
 
 	template<typename C>
 	void ECSWorld::add_component(EntityID id)
