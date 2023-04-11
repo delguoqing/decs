@@ -26,9 +26,9 @@
 #include <algorithm>
 #include <typeinfo>
 #include <assert.h>
-#include <robin_hood.h>
 #include <tuple>
 #include <iostream>
+#include "robin_hood.h"
 
 #pragma warning( disable : 4267 )
 
@@ -124,8 +124,8 @@ namespace decs {
 	};
 
 	struct MetatypeHash {
-		size_t name_hash{ 0 };
-		size_t matcher_hash{ 0 };
+		uint64_t name_hash{ 0 };
+		uint64_t matcher_hash{ 0 };
 
 		bool operator==(const MetatypeHash& other)const {
 			return name_hash == other.name_hash;
@@ -140,7 +140,7 @@ namespace decs {
 		}
 
 		template<typename T>
-		static constexpr size_t hash() {
+		static constexpr uint64_t hash() {
 
 			static_assert(!std::is_reference_v<T>, "dont send references to hash");
 			static_assert(!std::is_const_v<T>, "dont send const to hash");
@@ -269,7 +269,7 @@ namespace decs {
 	struct Archetype {
 		ChunkComponentList* componentList;
 		struct ECSWorld* ownerWorld;
-		size_t componentHash;
+		uint64_t componentHash;
 		int full_chunks;
 		//full chunks allways on the start of the array
 		std::vector<DataChunk*> chunks;
@@ -294,8 +294,8 @@ namespace decs {
 		std::vector<MetatypeHash> exclude_comps;
 
 
-		size_t require_matcher{ 0 };
-		size_t exclude_matcher{ 0 };
+		uint64_t require_matcher{ 0 };
+		uint64_t exclude_matcher{ 0 };
 
 
 		bool built{ false };
@@ -320,7 +320,7 @@ namespace decs {
 			};
 
 			auto build_matcher = [](const std::vector<MetatypeHash>& types) {
-				size_t and_hash = 0;
+				uint64_t and_hash = 0;
 
 				for (auto type : types)
 				{
@@ -353,9 +353,9 @@ namespace decs {
 		robin_hood::unordered_flat_map<uint64_t, Archetype*> archetype_map{};
 		std::vector<Archetype*> archetypes;
 		//unique archetype hashes
-		std::vector<size_t> archetypeHashes;
+		std::vector<uint64_t> archetypeHashes;
 		//bytemask hash for checking
-		std::vector<size_t> archetypeSignatures;
+		std::vector<uint64_t> archetypeSignatures;
 
 		robin_hood::unordered_flat_map<uint64_t, void*> singleton_map{};
 
@@ -479,7 +479,7 @@ namespace decs {
 		template<typename T>
 		static const Metatype* get_metatype() {
 			static const Metatype* mt = []() {
-				constexpr size_t name_hash = Metatype::build_hash<T>().name_hash;
+				constexpr uint64_t name_hash = Metatype::build_hash<T>().name_hash;
 
 				auto type = metatype_cache.find(name_hash);
 				if (type == metatype_cache.end()) {
@@ -570,8 +570,8 @@ namespace decs {
 
 
 
-		inline size_t build_signature(const Metatype** types, size_t count) {
-			size_t and_hash = 0;
+		inline uint64_t build_signature(const Metatype** types, size_t count) {
+			uint64_t and_hash = 0;
 			//for (auto m : types)
 			for (int i = 0; i < count; i++)
 			{
